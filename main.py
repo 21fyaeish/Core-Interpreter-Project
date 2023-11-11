@@ -1,22 +1,21 @@
 import scanner
+import interperter
 import sys
 
-file = sys.argv[1]
-tokenizer = scanner.Scanner(file)
+# get files and setup indent
+fileCore = sys.argv[1]
+dataFile = open(sys.argv[2], 'r')
+indent = "\t"
 
+# setup tokenizer and interperter
+tokenizer = scanner.Scanner(fileCore)
+coreProgram = interperter.Program(dataFile)
 
-while True:
-    token = tokenizer.getToken()
-    print(token)
+# interpert the program
+coreProgram.parseProgram(tokenizer)
+coreProgram.printProgram(indent)
+coreProgram.executeProgram()
 
-    if token == 33:
-        print("reached EOF")
-        break
-    if token == 34:
-        print("error invalid token entered")
-        break
-            
-    tokenizer.skipToken()
         
 
 

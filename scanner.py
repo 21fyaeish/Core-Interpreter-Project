@@ -14,7 +14,7 @@ class Scanner:
         self.__tokenizeLine(self.file)
        
 
-
+    
     def __tokenizeLine(self, file):
 
         line = file.readline()          
@@ -74,14 +74,14 @@ class Scanner:
             self.__tokenizeLine(self.file)
 
     def intVal(self):
-        if self.getToken(self) == 31:
+        if self.getToken() == 31:
             return int(self.tokens[self.cursor][1])
         else:
             print("error this is not a integer")
             sys.exit(1)
 
     def idName(self):
-        if self.getToken(self) == 32:
+        if self.getToken() == 32:
             return self.tokens[self.cursor][1]
         else:
             print("error this is not a identifier")

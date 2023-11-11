@@ -1,0 +1,118 @@
+# How main works
+Gets the first two command line args which are the Core program and the data file for the Core program. Then the tokenizer is ran and then the interperter runs.
+
+# How the tokenizer works:
+First the tokenizer opens a file and then calls the function __tokenizeLine(self, file) to tokenize the first non empty line. The __tokenizeLine(self, file) function
+reads a line from the input file and converts the sequence of characters in that line into a sequence of Core tokens and saves them in a list and sets the cursor to 
+point to the first token in the list. Then getToken() and skipToken() are repeatedly called until, after some number of iterations, getToken() returns 33 to indicate 
+end-of-file or 34 to indicate invalid token. getToken() specifically returns the current token or the token that the cursor is pointing at. skipToken() increments the
+cursor unless there are no more tokens in the current line so then it calls __tokenizeLine(self, file).
+
+# How the interperter works:
+
+BNF for Core:
+<prog>::= program <decl seq> begin <stmt seq> end			
+<decl seq>::= <decl> | <decl> <decl seq>										
+<stmt seq>::= <stmt> | <stmt> <stmt seq>
+<decl> ::=int  <id list>;		
+<id list>::=<id> | <id>, <id list>
+<stmt> ::=<assign>|<if>|<loop>|<in>|<out>	
+<assign>::=	<id> = <exp>;																																												
+<if>::=	if <cond> then <stmt seq> end; | if <cond> then <stmt seq> else <stmt seq> end;
+<loop>::=while <cond> loop <stmt seq> end;																							
+<in>::=	read <id list>;																																												
+<out>::=write <id list>;																																												
+<cond>::=<comp>|!<cond>	| [<cond> && <cond>] | [<cond> || <cond>]
+<comp>::= (<op> <comp op> <op>)			 		
+<exp>::= <fac>|<fac>+<exp>|<fac>-<exp>			
+<fac>::= <op> | <op> * <fac>						
+<op>::= <int> | <id> | (<exp>)						
+<comp op>::= != | == | < | > | <= | >=  				
+<id>::= ... as defined by RE ...						
+<int>::=... as defined by RE (only unsigned numbers)
+
+Using the BNF a interperter was created to parse, print, and execute a Core program. The interperter has a class for every
+non-terminal in the BNF. Each one of these classes have their associated parse, print, and execute methods. The way the 
+interperter is able to go through all the methods is it uses recursive decent parsing. When we call programParse() for example it
+starts at the <prog> non terminal class and works its way down through all the classes necessary to parse the specific Core program
+given. In order to interpert the program what is done is parseProgram, printProgram, and executeProgram are all called in main in 
+that exact order to interpert a Core program.
+
+Testing:
+
+The folloing programs bellow were used for testing.
+
+First data set:
+========================================================
+
+program
+int X, Y, XY;
+begin
+read X; Y = 0;
+while 
+( X > 0 ) loop
+            read XY ; write XY ;
+            Y = Y+XY; X = X-1;
+	  end;
+write Y;
+end
+
+               
+5  7  -4  10  5  -9
+========================================================
+
+For the second program there are three sets of input data; i.e., for
+the same Core program, I have provided three possible sets of input
+data. So you should convert this to three files; the program part
+will be the same in all three files, but the integer data for the
+Core program will be one of the three sets.
+
+Second data set :
+========================================================
+program
+int ABC, D;
+begin
+read ABC; 
+read D; 
+while (ABC != D)
+     loop 
+       if (ABC > D) then ABC = ABC - D;
+       else D = D - ABC;
+     end;
+end;
+write D;
+end
+
+First set of input data for this program: 9  36 
+
+Second set of input data for this program: 7  24
+
+Third set of input data for this program: 1  15 
+
+========================================================
+
+
+For the third program there are again three sets of input data.
+
+Third data set :
+========================================================
+
+program
+int X1, X4;
+int X2, X3, X7;
+begin
+X1 = 0; X2 = 1; X3 = 1; read X4;10
+while (X1<X4) loop
+                X7=X2+X3; X2=X3;
+                X3=X7; X1=X1+1;
+              end;
+write X2;
+end
+
+First set of input data : 5 
+
+Second set of input data : 10 
+
+Third set of input data : 3
+
+========================================================
